@@ -16,6 +16,14 @@ jobs:
 
     working_directory: ~/repo
 
+## Customize the test machine
+machine:
+  environment:
+    ANDROID_TARGET: android-27
+    ADB_INSTALL_TIMEOUT: 12
+      - sudo ANDROID_HOME=/usr/local/android-sdk-linux ./gradlew
+
+
     environment:
       # Customize the JVM maximum heap limit
       JVM_OPTS: -Xmx3200m
