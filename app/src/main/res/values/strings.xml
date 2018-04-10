@@ -1,0 +1,15 @@
+<resources>
+    <string name="app_name">Med Manager</string>
+    <string name="sign_out">Sign Out</string>
+    <string name="medication_name">Medication Name</string>
+    <string name="frequency">Daily Frequency:</string>
+    <string name="start_date">Start Date</string>
+    <string name="end_date">End Start</string>
+    <string name="medication_desc">Description</string>
+    <string name="add_medication">Add Medication</string>
+    <string name="save_medication">Save Medication</string>
+    <string name="add_new_medication">Add New Medication</string>
+    <string name="cancel_adding_medication">Cancel Adding Medication</string>
+    <string name="add_reminder">Add Reminder</string>
+    <string name="time_of_reminder">Time of Reminder</string>
+</resources>

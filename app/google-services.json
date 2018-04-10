@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "36471102499",
+    "project_id": "firebase-med-manager"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:36471102499:android:b0c5e3a72a0ebdf1",
+        "android_client_info": {
+          "package_name": "com.oluwafemi.medmanager"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "36471102499-lcqidl2t0ao7ck8dlcrugqgs4lg8necn.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.oluwafemi.medmanager",
+            "certificate_hash": "6742a9625ecf361f6473a28e557c86a6c7614be6"
+          }
+        },
+        {
+          "client_id": "36471102499-395qegtlob6o8h7kcc7ct12tl3llala5.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB9L4GUmhUVXTKHZ6jn99Pve1AMFqOmvN8"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
