@@ -18,6 +18,7 @@ package com.oluwafemi.medmanager.model;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import java.util.Date;
 import java.util.UUID;
@@ -29,8 +30,9 @@ import java.util.UUID;
 @Entity
 public class Medication {
 
+    @NonNull
     @PrimaryKey
-    private String  Id= UUID.randomUUID().toString();;
+    private String Id = UUID.randomUUID().toString();
     private String name;
     private String description;
     private String frequency;

@@ -131,6 +131,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             // launch main activity
             Intent mIntent = new Intent(this, MainActivity.class);
             mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            finish();
             startActivity(mIntent);
 
         }
