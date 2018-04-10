@@ -5,7 +5,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/code
+    working_directory: ~/repo
     docker:
       - image: circleci/android:api-24-node8-alpha #confirm the latest docker image :)
     environment:
