@@ -5,7 +5,7 @@
 version: 2
 jobs:
   build:
-    working_directory: ~/repo
+    working_directory: ~/Andela-Med-Manager
     docker:
       - image: circleci/android:api-24-node8-alpha #confirm the latest docker image :)
     environment:
