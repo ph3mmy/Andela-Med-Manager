@@ -25,6 +25,7 @@ import android.widget.TextView;
 
 import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.model.Medication;
+import com.oluwafemi.medmanager.util.Utility;
 
 import java.util.List;
 
@@ -53,7 +54,8 @@ public class MedicationRecyclerAdapter extends RecyclerView.Adapter<MedicationRe
         Medication medication = medicationList.get(position);
         if (medication != null) {
             holder.tvMedicationName.setText(medication.getName());
-            holder.tvMedicationDuration.setText("" + medication.getStartDate() + " - " + medication.getEndDate());
+            String durationStr = Utility.formatRecyclerViewDate(medication.getStartDate()) + " - " + Utility.formatRecyclerViewDate(medication.getEndDate());
+            holder.tvMedicationDuration.setText(durationStr);
             holder.tvMedicationFreq.setText(medication.getFrequency());
         }
     }

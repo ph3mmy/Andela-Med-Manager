@@ -5,6 +5,10 @@ import android.support.design.widget.TextInputLayout;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * Created by phemi-mint on 4/10/18.
  */
@@ -62,5 +66,13 @@ public class Utility {
 
             }
         });
+    }
+
+    // format Date
+    public static String formatRecyclerViewDate(Date mDate) {
+        String newDate;
+        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy", Locale.getDefault());
+        newDate = sdf.format(mDate);
+        return newDate;
     }
 }

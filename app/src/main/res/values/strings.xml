@@ -4,7 +4,7 @@
     <string name="medication_name">Medication Name</string>
     <string name="frequency">Daily Frequency:</string>
     <string name="start_date">Start Date</string>
-    <string name="end_date">End Start</string>
+    <string name="end_date">End Date</string>
     <string name="medication_desc">Description</string>
     <string name="add_medication">Add Medication</string>
     <string name="save_medication">Save Medication</string>
@@ -12,4 +12,10 @@
     <string name="cancel_adding_medication">Cancel Adding Medication</string>
     <string name="add_reminder">Add Reminder</string>
     <string name="time_of_reminder">Time of Reminder</string>
+    <string name="search">search</string>
+    <string name="profile">Profile</string>
+    <string name="medications_by_month">Medications by Month</string>
+    <string name="last_treated_ailment">last Active Medication:</string>
+    <string name="log_out">Log Out</string>
+    <string name="edit_profile">Edit Profile</string>
 </resources>

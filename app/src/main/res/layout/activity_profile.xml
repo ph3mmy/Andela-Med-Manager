@@ -1,0 +1,151 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <LinearLayout xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <include
+            android:id="@+id/include_toolbar"
+            layout="@layout/general_toolbar" />
+
+        <ScrollView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scrollbars="none">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="vertical"
+                android:padding="@dimen/margin_20">
+
+                <com.mikhaellopez.circularimageview.CircularImageView
+                    android:id="@+id/civ_profile_image"
+                    android:layout_width="150dp"
+                    android:layout_height="150dp"
+                    app:civ_border="true"
+                    app:civ_border_color="@color/colorPrimary"
+                    app:civ_border_width="2dp"
+                    tools:src="@mipmap/ic_launcher" />
+
+                <TextView
+                    android:id="@+id/tv_profile_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_20"
+                    android:background="@drawable/transparent_button"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/margin_5"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_18"
+                    android:textStyle="bold"
+                    tools:text="Ade Ade" />
+
+                <TextView
+                    android:id="@+id/tv_profile_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_5"
+                    android:gravity="center_horizontal"
+                    android:padding="@dimen/margin_5"
+                    android:textColor="@color/colorPrimary"
+                    android:textSize="@dimen/text_size_18"
+                    android:textStyle="bold"
+                    tools:text="Ade@Ade.com" />
+
+
+                <android.support.v7.widget.CardView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="@dimen/margin_10"
+                    app:cardCornerRadius="@dimen/margin_10"
+                    app:cardElevation="5dp"
+                    app:cardPreventCornerOverlap="true"
+                    app:cardUseCompatPadding="true">
+
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/colorPrimary"
+                        android:gravity="center_horizontal"
+                        android:orientation="vertical"
+                        android:padding="@dimen/margin_10">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="@string/last_treated_ailment"
+                            android:textColor="@color/white" />
+
+                        <TextView
+                            android:id="@+id/tv_profile_last_med"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:textColor="@color/white"
+                            android:textSize="@dimen/text_size_18"
+                            tools:text="Panadol" />
+
+                        <RelativeLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginEnd="@dimen/margin_20"
+                            android:layout_marginStart="@dimen/margin_20"
+                            android:layout_marginTop="@dimen/margin_10">
+
+                            <TextView
+                                android:id="@+id/tv_start_date_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:text="@string/start_date"
+                                android:textColor="@color/colorPrimaryLight" />
+
+                            <TextView
+                                android:id="@+id/tv_start_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_below="@+id/tv_start_date_label"
+                                android:textColor="@color/white"
+                                tools:text="April 26, 2018" />
+
+                            <TextView
+                                android:id="@+id/tv_end_date_label"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentRight="true"
+                                android:text="@string/end_date"
+                                android:textColor="@color/colorPrimaryLight" />
+
+                            <TextView
+                                android:id="@+id/tv_end_date"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentEnd="true"
+                                android:layout_alignParentRight="true"
+                                android:layout_below="@+id/tv_end_date_label"
+                                android:textColor="@color/white"
+                                tools:text="April 28, 2018" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+                </android.support.v7.widget.CardView>
+
+                <Button
+                    android:id="@+id/btn_log_out"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
+                    android:layout_marginTop="@dimen/margin_20"
+                    android:background="@drawable/white_gradient_button"
+                    android:text="@string/log_out"
+                    android:textColor="@color/colorPrimaryDark" />
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+</layout>

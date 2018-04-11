@@ -25,8 +25,11 @@ import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.Toolbar;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 
+import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.adapter.MedicationRecyclerAdapter;
 import com.oluwafemi.medmanager.databinding.ActivityMainBinding;
@@ -42,6 +45,9 @@ public class MainActivity extends AppCompatActivity  {
 
     Toolbar toolbar;
 
+    String[] months = {"All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
+    String selectedSortCategory;
+
     ActivityMainBinding binding;
     MedicationRecyclerAdapter adapter;
     MedicationViewModel medicationViewModel;
@@ -55,6 +61,9 @@ public class MainActivity extends AppCompatActivity  {
         toolbar = binding.toolbar;
         toolbar.setTitle("All Medications");
         setSupportActionBar(toolbar);
+
+        // initialize sort medication by month spinner
+        initCategorySpinner();
 
         // initialize medicationViewModel
         medicationViewModel = ViewModelProviders.of(this).get(MedicationViewModel.class);
@@ -72,6 +81,27 @@ public class MainActivity extends AppCompatActivity  {
 
     }
 
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.action_profile:
+                // start profile action
+
+                break;
+            case R.id.action_search:
+                // TODO: implement search
+
+                break;
+        }
+        return true;
+    }
+
     private void addNewMedication() {
         startActivity(new Intent(MainActivity.this, AddMedicationActivity.class));
     }
@@ -87,5 +117,15 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
+    private void initCategorySpinner() {
+        selectedSortCategory = months[0];
+        binding.pageContent.spinnerMedications.setItems(months);
+        binding.pageContent.spinnerMedications.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
+                selectedSortCategory = months[position];
+            }
+        });
+    }
 
 }
