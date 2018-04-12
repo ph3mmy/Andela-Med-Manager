@@ -105,8 +105,9 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:hint="@string/medication_desc"
-        android:inputType="text"
-        android:lines="5"
+        android:inputType="textMultiLine"
+        android:lines="3"
+        android:gravity="top"
         android:textColorHint="@color/darkerGray"
         app:backgroundTint="@color/colorPrimary" />
     </android.support.design.widget.TextInputLayout>
@@ -145,8 +146,6 @@
             </LinearLayout>
 
         </LinearLayout>
-
-
 
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_med_start_date"
@@ -240,15 +239,14 @@
             android:textColor="@color/darkerGray"
             android:textColorHint="@color/darkerGray"
             android:layout_gravity="center"
-            android:paddingStart="@dimen/margin_10"
-            android:paddingEnd="@dimen/margin_10"
+            android:paddingStart="@dimen/margin_5"
+            android:paddingEnd="@dimen/margin_5"
             android:paddingBottom="@dimen/margin_5">
 
             <android.support.design.widget.TextInputEditText
                 android:id="@+id/tie_reminder_time"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:minWidth="360dp"
                 android:hint="@string/time_of_reminder"
                 android:inputType="text"
                 android:focusable="false"
@@ -263,8 +261,8 @@
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:layout_gravity="bottom"
-                android:layout_marginStart="@dimen/margin_10"
-                android:layout_marginEnd="@dimen/margin_10"
+                android:layout_marginStart="@dimen/margin_5"
+                android:layout_marginEnd="@dimen/margin_5"
                 android:background="@drawable/white_gradient_button">
                 <com.jaredrummler.materialspinner.MaterialSpinner
                     android:id="@+id/spinner_reminder_freq"

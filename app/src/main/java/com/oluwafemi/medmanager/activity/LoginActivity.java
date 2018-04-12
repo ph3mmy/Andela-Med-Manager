@@ -16,6 +16,7 @@
 
 package com.oluwafemi.medmanager.activity;
 
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.Intent;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -36,6 +37,11 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.databinding.ActivityLoginBinding;
+import com.oluwafemi.medmanager.model.User;
+import com.oluwafemi.medmanager.util.PrefUtils;
+import com.oluwafemi.medmanager.viewmodel.UserViewModel;
+
+import spencerstudios.com.bungeelib.Bungee;
 
 /**
  * Created by phemi-mint on 3/28/18.
@@ -69,7 +75,6 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
                 .addApi(Auth.GOOGLE_SIGN_IN_API,gso)
                 .build();
 
-
         binding.signInButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -85,22 +90,22 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     protected void onStart() {
         super.onStart();
         // check if the user is already signed in
-        OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
-        if (opr.isDone()) {
-
-            Log.e(TAG, "Got cached sign-in");
-            GoogleSignInResult result = opr.get();
-            handleSignInResult(result);
+        boolean isLoggedIn = PrefUtils.getUserIsLoggedIn(this);
+        if (isLoggedIn) {
+            startMainActivity();
         } else {
-
-//            showProgressDialog();
-            opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
-                @Override
-                public void onResult(GoogleSignInResult googleSignInResult) {
-//                    hideProgressDialog();
-                    handleSignInResult(googleSignInResult);
-                }
-            });
+            OptionalPendingResult<GoogleSignInResult> opr = Auth.GoogleSignInApi.silentSignIn(mGoogleApiClient);
+            if (opr.isDone()) {
+                GoogleSignInResult result = opr.get();
+                handleSignInResult(result);
+            } else {
+                opr.setResultCallback(new ResultCallback<GoogleSignInResult>() {
+                    @Override
+                    public void onResult(GoogleSignInResult googleSignInResult) {
+                        handleSignInResult(googleSignInResult);
+                    }
+                });
+            }
         }
     }
 
@@ -120,20 +125,41 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
 
     }
 
+    // Extract data from the user's account and proceed to MainActivity
     private void handleSignInResult(GoogleSignInResult result) {
-        Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             GoogleSignInAccount acct = result.getSignInAccount();
-            /*Log.e(TAG, "handleSignInResult: account name == " + acct.getDisplayName());
-            Log.e(TAG, "handleSignInResult: account photo url == " + acct.getPhotoUrl());*/
-            // TODO: get all details from result and build user profile
-
-            // launch main activity
-            Intent mIntent = new Intent(this, MainActivity.class);
-            mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-            finish();
-            startActivity(mIntent);
-
+            User user = new User();
+            user.setUserName(acct.getDisplayName());
+            user.setId(acct.getId());
+            user.setAge(null);
+            user.setAddress(null);
+            user.setGender(null);
+            user.setGenotype("Not Sure");
+            user.setActiveMedication(null);
+            user.setActiveMedEndDate(null);
+            user.setActiveMedStartDate(null);
+            user.setEmail(acct.getEmail());
+            user.setUserImageUrl(acct.getPhotoUrl().toString());
+            saveUserProfile(user);
         }
     }
+
+    // launch main activity
+    private void startMainActivity() {
+        Intent mIntent = new Intent(this, MainActivity.class);
+        mIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+        startActivity(mIntent);
+        Bungee.inAndOut(this);
+        finish();
+    }
+
+    private void saveUserProfile(User user) {
+        UserViewModel viewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        viewModel.insertUser(user);
+        // set user login pref to true
+        PrefUtils.setUserIsLoggedIn(this, true);
+        startMainActivity();
+    }
+
 }

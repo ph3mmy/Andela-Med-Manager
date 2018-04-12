@@ -29,16 +29,26 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="end"
+                android:background="@drawable/transparent_button"
                 android:layout_marginTop="@dimen/margin_5"
-                android:gravity="end"
-                android:padding="@dimen/margin_5"
+                android:gravity="center"
+                android:padding="@dimen/margin_2"
                 tools:text="Twice Daily" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.3dp"
+                android:background="@color/colorPrimary"
+                android:layout_marginTop="@dimen/margin_5"
+                android:layout_marginBottom="@dimen/margin_2"/>
 
             <TextView
                 android:id="@+id/tv_duration"
-                android:layout_width="wrap_content"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:textSize="@dimen/text_size_16"
+                android:gravity="center_horizontal"
+                android:layout_gravity="center_vertical"
                 tools:text="5 days || Mon - Fri" />
 
         </LinearLayout>

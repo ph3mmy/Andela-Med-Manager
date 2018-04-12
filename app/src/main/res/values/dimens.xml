@@ -8,4 +8,7 @@
     <dimen name="text_size_16">16sp</dimen>
     <dimen name="margin_30">30dp</dimen>
     <dimen name="margin_40">40dp</dimen>
+    <dimen name="margin_50">50dp</dimen>
+    <dimen name="margin_2">2dp</dimen>
+    <dimen name="text_size_22">22sp</dimen>
 </resources>

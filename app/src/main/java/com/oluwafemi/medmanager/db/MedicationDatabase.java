@@ -7,12 +7,13 @@ import android.arch.persistence.room.TypeConverters;
 import android.content.Context;
 
 import com.oluwafemi.medmanager.model.Medication;
+import com.oluwafemi.medmanager.model.User;
 
 /**
  * Created by phemi-mint on 3/28/18.
  */
 
-@Database(entities = {Medication.class}, version = 1, exportSchema = false)
+@Database(entities = {Medication.class, User.class}, version = 1, exportSchema = false)
 @TypeConverters({DateConverter.class})
 public abstract class MedicationDatabase extends RoomDatabase {
 
@@ -26,5 +27,6 @@ public abstract class MedicationDatabase extends RoomDatabase {
     }
 
     public abstract MedicationDao medicationDao();
+    public abstract UserDao userDao();
 
 }

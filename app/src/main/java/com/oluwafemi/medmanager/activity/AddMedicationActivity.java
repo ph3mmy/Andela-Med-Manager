@@ -17,6 +17,7 @@
 package com.oluwafemi.medmanager.activity;
 
 import android.app.TimePickerDialog;
+import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
@@ -25,6 +26,7 @@ import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
 import android.widget.TimePicker;
@@ -35,12 +37,15 @@ import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.databinding.ActivityAddMedicationBinding;
 import com.oluwafemi.medmanager.fragment.DatePickerFragment;
 import com.oluwafemi.medmanager.model.Medication;
+import com.oluwafemi.medmanager.model.User;
 import com.oluwafemi.medmanager.util.Utility;
 import com.oluwafemi.medmanager.viewmodel.MedicationViewModel;
+import com.oluwafemi.medmanager.viewmodel.UserViewModel;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
 /**
@@ -58,6 +63,9 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
     private String startDateStr, endDateStr, selectedDailyFreq, selectedReminderRepeat, selectedReminderTime = null;
     private boolean hasReminder = false;
 
+    User user;
+    UserViewModel userViewModel;
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -67,6 +75,9 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         initFrequencySpinner();
         initRepeatSpinner();
         initReminderSwitch();
+
+        // get the user object to update with latest medication info
+        getExistingUser();
 
         // set onclicklistener
         binding.ivClose.setOnClickListener(this);
@@ -115,6 +126,16 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         });
     }
 
+    private void getExistingUser() {
+        userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
+        userViewModel.getUserList().observe(this, new Observer<List<User>>() {
+            @Override
+            public void onChanged(@Nullable List<User> users) {
+                user = users.get(0);
+            }
+        });
+    }
+
     @Override
     public void onClick(View view) {
         switch (view.getId()) {
@@ -149,7 +170,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
                 selectedReminderTime = selectedHour + ":" + selectedMinute;
                 binding.tieReminderTime.setText(selectedReminderTime);
             }
-        }, hour, minute, true);
+        }, hour, minute, false);
         dlg.setTitle("Select Reminder Time");
         dlg.show();
     }
@@ -200,6 +221,15 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
     private void saveMedication(Medication medication) {
         MedicationViewModel medicationViewModel = ViewModelProviders.of(this).get(MedicationViewModel.class);
         medicationViewModel.insertMedication(medication);
+        updateUserProfileWithMedication(medication);
+    }
+
+    // update user medication info
+    private void updateUserProfileWithMedication(Medication medication) {
+        user.setActiveMedStartDate(medication.getStartDate());
+        user.setActiveMedEndDate(medication.getEndDate());
+        user.setActiveMedication(medication.getName());
+        userViewModel.updateExistingUser(user);
         Toast.makeText(this, "Medication successfully saved", Toast.LENGTH_SHORT).show();
         finish();
     }
@@ -214,15 +244,23 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
                 SimpleDateFormat dateFormat = new SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault());
                 String dateStr = dateFormat.format(date);
                 if (isStartDate) {
-                    binding.tieMedStartDate.setError(null);
-                    binding.tieMedStartDate.setText(dateStr);
-                    startDate = date;
-                    startDateStr = dateStr;
+                    if (endDate == null || date == endDate) {
+                        setStartDateToView(date, dateStr);
+                    } else if (!isStartDateGreater(date, endDate)) {
+                        setStartDateToView(date, dateStr);
+                    } else {
+                        Toast.makeText(AddMedicationActivity.this, "Start date cannot be greater than end date", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "onDateSetListener: mot true" );
+                    }
                 } else {
-                    endDate = date;
-                    endDateStr = dateStr;
-                    binding.tieMedEndDate.setError(null);
-                    binding.tieMedEndDate.setText(dateStr);
+                    if (startDate == null) {
+                        setEndDateToView(date, dateStr);
+                    } else if (!isStartDateGreater(startDate, date)) {
+                        setEndDateToView(date, dateStr);
+                    } else {
+                        Toast.makeText(AddMedicationActivity.this, "Start date cannot be greater than end date", Toast.LENGTH_SHORT).show();
+                        Log.e(TAG, "onDateSetListener: mot true" );
+                    }
                 }
             }
         });
@@ -233,5 +271,23 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
             }
         });
         datePickerFragment.show(getSupportFragmentManager(), "datePicker");
+    }
+
+    private void setStartDateToView(Date date, String dateStr) {
+        binding.tieMedStartDate.setError(null);
+        binding.tieMedStartDate.setText(dateStr);
+        startDate = date;
+        startDateStr = dateStr;
+    }
+
+    private void setEndDateToView(Date date, String dateStr) {
+        endDate = date;
+        endDateStr = dateStr;
+        binding.tieMedEndDate.setError(null);
+        binding.tieMedEndDate.setText(dateStr);
+    }
+
+    private boolean isStartDateGreater(Date startDate, Date endDate) {
+        return startDate.getTime() >= endDate.getTime();
     }
 }

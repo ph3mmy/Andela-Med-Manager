@@ -54,7 +54,8 @@ public class MedicationRecyclerAdapter extends RecyclerView.Adapter<MedicationRe
         Medication medication = medicationList.get(position);
         if (medication != null) {
             holder.tvMedicationName.setText(medication.getName());
-            String durationStr = Utility.formatRecyclerViewDate(medication.getStartDate()) + " - " + Utility.formatRecyclerViewDate(medication.getEndDate());
+//            String durationStr = Utility.formatRecyclerViewDateDaysOnly(medication.getStartDate()) + " - " + Utility.formatRecyclerViewDateDaysOnly(medication.getEndDate());
+            String durationStr = Utility.formatModifyRecyclerViewDate(medication.getStartDate(), medication.getEndDate());
             holder.tvMedicationDuration.setText(durationStr);
             holder.tvMedicationFreq.setText(medication.getFrequency());
         }

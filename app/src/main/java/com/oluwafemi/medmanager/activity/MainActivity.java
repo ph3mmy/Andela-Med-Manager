@@ -92,7 +92,7 @@ public class MainActivity extends AppCompatActivity  {
         switch (item.getItemId()) {
             case R.id.action_profile:
                 // start profile action
-
+                startActivity(new Intent(MainActivity.this, ProfileActivity.class));
                 break;
             case R.id.action_search:
                 // TODO: implement search
