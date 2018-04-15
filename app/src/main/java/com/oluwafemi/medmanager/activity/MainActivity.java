@@ -29,14 +29,20 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
-import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.adapter.MedicationRecyclerAdapter;
+import com.oluwafemi.medmanager.adapter.MedicationSectionedAdapter;
 import com.oluwafemi.medmanager.databinding.ActivityMainBinding;
 import com.oluwafemi.medmanager.model.Medication;
+import com.oluwafemi.medmanager.util.Utility;
 import com.oluwafemi.medmanager.viewmodel.MedicationViewModel;
 
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
+
+import io.github.luizgrp.sectionedrecyclerviewadapter.SectionedRecyclerViewAdapter;
 
 
 public class MainActivity extends AppCompatActivity  {
@@ -45,13 +51,13 @@ public class MainActivity extends AppCompatActivity  {
 
     Toolbar toolbar;
 
-    String[] months = {"All", "January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"};
     String selectedSortCategory;
 
     ActivityMainBinding binding;
     MedicationRecyclerAdapter adapter;
     MedicationViewModel medicationViewModel;
     LinearLayoutManager layoutManager;
+    private SectionedRecyclerViewAdapter sectionedRecyclerViewAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,16 +68,11 @@ public class MainActivity extends AppCompatActivity  {
         toolbar.setTitle("All Medications");
         setSupportActionBar(toolbar);
 
-        // initialize sort medication by month spinner
-        initCategorySpinner();
-
         // initialize medicationViewModel
         medicationViewModel = ViewModelProviders.of(this).get(MedicationViewModel.class);
         layoutManager = new LinearLayoutManager(this);
 
-        // fetch all medications
-        fetchAllMedications();
-
+        fetchCurrentPreviousYearMedication();
         binding.fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -117,15 +118,61 @@ public class MainActivity extends AppCompatActivity  {
         });
     }
 
-    private void initCategorySpinner() {
-        selectedSortCategory = months[0];
-        binding.pageContent.spinnerMedications.setItems(months);
-        binding.pageContent.spinnerMedications.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
+    // query medications by months
+    private void fetchMonthlyMedications(String monthInd) {
+        medicationViewModel.getMedicationByMonthList(monthInd).observe(this, new Observer<List<Medication>>() {
             @Override
-            public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
-                selectedSortCategory = months[position];
+            public void onChanged(@Nullable List<Medication> medications) {
+                adapter = new MedicationRecyclerAdapter(medications);
+                binding.pageContent.rvMedication.setLayoutManager(layoutManager);
+                binding.pageContent.rvMedication.setAdapter(adapter);
             }
         });
+    }
+
+    // get only medications for the current year and section it into months
+    private void fetchCurrentPreviousYearMedication() {
+        Calendar now = Calendar.getInstance();
+        int year = now.get(Calendar.YEAR);
+        int prevYear = now.get(Calendar.YEAR) - 1;
+        medicationViewModel.getMedicationForCurrentYear(String.valueOf(prevYear), String.valueOf(year)).observe(this, new Observer<List<Medication>>() {
+            @Override
+            public void onChanged(@Nullable List<Medication> medications) {
+                sectionMedicationIntoMonths(medications);
+            }
+        });
+    }
+
+    // section medications into months
+    private void sectionMedicationIntoMonths (List<Medication> medicationList) {
+        sectionedRecyclerViewAdapter = new SectionedRecyclerViewAdapter();
+        Calendar dateCreatedCal = Calendar.getInstance();
+
+        for (int eachMonth = 11; eachMonth >= 0; eachMonth--) {
+
+            // using a decrementing loop since list has been sorted based on date DESC
+            List<Medication> monthlyMed = new ArrayList<>();
+            for (Medication medication : medicationList) {
+                // get the month each medication was created and check if it tallies with the current medication month (eachMonth)
+                dateCreatedCal.setTime(new Date(medication.getDateCreated()));
+                int dateCreatedMonth = dateCreatedCal.get(Calendar.MONTH);
+
+                if (eachMonth == dateCreatedMonth) {
+                    monthlyMed.add(medication);
+                }
+            }
+
+            // create a title and section for each non-empty medicationList
+            if (monthlyMed.size() != 0) {
+                String sectionTitle = Utility.returnMonthYearFromLong(monthlyMed.get(0).getDateCreated());
+                sectionedRecyclerViewAdapter.addSection(new MedicationSectionedAdapter(monthlyMed, sectionTitle));
+            }
+
+        }
+
+        binding.pageContent.rvMedication.setLayoutManager(layoutManager);
+        binding.pageContent.rvMedication.setAdapter(sectionedRecyclerViewAdapter);
+//        return monthlyMed;
     }
 
 }

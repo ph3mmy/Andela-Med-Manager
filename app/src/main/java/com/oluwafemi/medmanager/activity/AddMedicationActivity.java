@@ -204,6 +204,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         } else {
             Medication medication = new Medication();
             medication.setName(name);
+            medication.setDateCreated(System.currentTimeMillis());
             medication.setDescription(description);
             medication.setFrequency(selectedDailyFreq);
             medication.setStartDate(startDate);

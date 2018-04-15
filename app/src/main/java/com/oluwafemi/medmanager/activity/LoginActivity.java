@@ -134,7 +134,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             user.setId(acct.getId());
             user.setAge(null);
             user.setAddress(null);
-            user.setGender(null);
+            user.setGender("Male");
             user.setGenotype("Not Sure");
             user.setActiveMedication(null);
             user.setActiveMedEndDate(null);

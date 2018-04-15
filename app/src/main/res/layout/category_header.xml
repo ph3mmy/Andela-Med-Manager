@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:background="@color/colorPrimaryLight"
+    android:gravity="end"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/tv_category_header"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="end"
+        android:gravity="end"
+        android:layout_marginEnd="@dimen/margin_10"
+        android:textSize="@dimen/text_size_14"
+        android:padding="@dimen/margin_5"
+        tools:text="april 2018"
+        android:textStyle="bold"
+        android:textColor="@color/colorPrimaryDark"
+        android:textAllCaps="true"
+        android:layout_marginRight="@dimen/margin_10" />
+
+</LinearLayout>

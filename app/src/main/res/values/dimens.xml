@@ -11,4 +11,5 @@
     <dimen name="margin_50">50dp</dimen>
     <dimen name="margin_2">2dp</dimen>
     <dimen name="text_size_22">22sp</dimen>
+    <dimen name="text_size_14">14sp</dimen>
 </resources>

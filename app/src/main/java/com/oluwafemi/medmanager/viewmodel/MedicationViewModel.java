@@ -21,6 +21,7 @@ public class MedicationViewModel extends AndroidViewModel {
 
     private MedicationDatabase medicationDatabase;
     private LiveData<List<Medication>> medicationList;
+    private LiveData<List<Medication>> medicationByMonthList;
 
     public MedicationViewModel(@NonNull Application application) {
         super(application);
@@ -31,6 +32,16 @@ public class MedicationViewModel extends AndroidViewModel {
 
     public LiveData<List<Medication>> getMedicationList() {
         return medicationList;
+    }
+
+    // get all medication for the current year
+    public LiveData<List<Medication>> getMedicationForCurrentYear(String lastYear, String thisYear) {
+        return medicationDatabase.medicationDao().getAllMedicationsForCurrentYear(lastYear, thisYear);
+    }
+
+    // get all medication by month
+    public LiveData<List<Medication>> getMedicationByMonthList(String monthIndex) {
+        return medicationDatabase.medicationDao().getMedicationByMonth();
     }
 
     public void insertMedication(Medication medication) {

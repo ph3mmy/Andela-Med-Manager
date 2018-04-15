@@ -48,12 +48,15 @@ dependencies {
     annotationProcessor "android.arch.persistence.room:compiler:1.0.0"
     // circular imageview library
     implementation 'com.mikhaellopez:circularimageview:3.0.2'
-//    Animation library
-    compile 'com.github.Binary-Finery:Bungee:master'
-//    parcelable library
-    compile 'org.parceler:parceler-api:1.1.6'
+    // Animation library
+    implementation 'com.github.Binary-Finery:Bungee:master'
+    // parcelable library
+    implementation 'org.parceler:parceler-api:1.1.6'
     annotationProcessor 'org.parceler:parceler:1.1.6'
 //    glide library for image loading
     implementation 'com.github.bumptech.glide:glide:4.3.1'
+
+    // sectioned recyclerview library
+    implementation 'io.github.luizgrp.sectionedrecyclerviewadapter:sectionedrecyclerviewadapter:1.2.0'
 }
 apply plugin: 'com.google.gms.google-services'

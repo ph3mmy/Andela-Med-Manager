@@ -90,20 +90,6 @@ public class EditProfileActivity extends AppCompatActivity {
     }
 
     private void initGenderSpinner() {
-        /*int selectedIndex = getPositionForGenderSpinner(user.getGender());
-        Log.e(TAG, "initGenderSpinner: sel index == " + selectedIndex);
-        binding.spinnerGender.setSelectedIndex(selectedIndex);
-        binding.spinnerGender.setItems(genderArr);
-
-        selectedGender = genderArr[selectedIndex];
-        binding.spinnerGender.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
-                selectedGender = genderArr[position];
-            }
-        });*/
-
-
         genderList = new ArrayList<>();
         genderList = getListForGenderSpinner(user.getGender());
         binding.spinnerGender.setItems(genderList);

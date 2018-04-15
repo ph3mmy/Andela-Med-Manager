@@ -116,6 +116,13 @@ public class Utility {
         return noOfdays + " || " + day1 + " - " + day2;
     }
 
+    // get formattted title date for recycler list headers/sections
+    public static String returnMonthYearFromLong(long dateLong) {
+        Date date = new Date(dateLong);
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        return sdf.format(date);
+    }
+
     // helper to set toolbar title
     public static void setToolbarTitle(AppCompatActivity appCompatActivity, String title, Toolbar toolbar) {
         toolbar.setTitle(title);

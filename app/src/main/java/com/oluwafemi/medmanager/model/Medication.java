@@ -38,6 +38,7 @@ public class Medication {
     private String frequency;
     private Date startDate;
     private Date endDate;
+    private long dateCreated;
     private boolean hasReminder;
     private String reminderTime;
     private String reminderRepeatFrequency;
@@ -88,6 +89,14 @@ public class Medication {
 
     public void setEndDate(Date endDate) {
         this.endDate = endDate;
+    }
+
+    public long getDateCreated() {
+        return dateCreated;
+    }
+
+    public void setDateCreated(long dateCreated) {
+        this.dateCreated = dateCreated;
     }
 
     public boolean isHasReminder() {

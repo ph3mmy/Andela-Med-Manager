@@ -27,6 +27,7 @@ import android.arch.persistence.room.Update;
 
 import com.oluwafemi.medmanager.model.Medication;
 
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -37,8 +38,16 @@ import java.util.List;
 @TypeConverters(DateConverter.class)
 public interface MedicationDao {
 
-    @Query("select * from Medication")
+    @Query("select * from Medication order by dateCreated DESC")
     LiveData<List<Medication>> getAllMedications();
+
+    @Query("select * from Medication where strftime('%m', datetime(startDate)) = '04'")
+    LiveData<List<Medication>> getMedicationByMonth();
+
+    // returns the list of medication for the current year only
+    @Query("select * from Medication where strftime('%Y', datetime(dateCreated/1000, 'unixepoch')) = :lastYear or " +
+            "strftime('%Y', datetime(dateCreated/1000, 'unixepoch')) = :thisYear order by dateCreated DESC")
+    LiveData<List<Medication>> getAllMedicationsForCurrentYear(String lastYear, String thisYear);
 
     @Query("select * from Medication where name = :name")
     Medication loadMedicationWithName(String name);
