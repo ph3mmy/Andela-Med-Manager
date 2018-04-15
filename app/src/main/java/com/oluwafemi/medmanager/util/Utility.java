@@ -110,7 +110,7 @@ public class Utility {
         noOfdays = (dateDiff/(1000*60*60*24) + 1) + " " + "days";
 
         // get days only
-        SimpleDateFormat daysOnlyFormat = new SimpleDateFormat("EEE", Locale.getDefault());
+        SimpleDateFormat daysOnlyFormat = new SimpleDateFormat("EEE, MMM d", Locale.getDefault());
         String day1 = daysOnlyFormat.format(mDate1);
         String day2 = daysOnlyFormat.format(mDate2);
         return noOfdays + " || " + day1 + " - " + day2;
@@ -119,7 +119,7 @@ public class Utility {
     // get formattted title date for recycler list headers/sections
     public static String returnMonthYearFromLong(long dateLong) {
         Date date = new Date(dateLong);
-        SimpleDateFormat sdf = new SimpleDateFormat("MMMM yyyy", Locale.getDefault());
+        SimpleDateFormat sdf = new SimpleDateFormat("MMMM", Locale.getDefault());
         return sdf.format(date);
     }
 

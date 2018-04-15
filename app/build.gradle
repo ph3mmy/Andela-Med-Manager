@@ -58,5 +58,7 @@ dependencies {
 
     // sectioned recyclerview library
     implementation 'io.github.luizgrp.sectionedrecyclerviewadapter:sectionedrecyclerviewadapter:1.2.0'
+
+    //
 }
 apply plugin: 'com.google.gms.google-services'

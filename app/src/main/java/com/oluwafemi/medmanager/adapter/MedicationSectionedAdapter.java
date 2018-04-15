@@ -48,7 +48,6 @@ public class MedicationSectionedAdapter extends StatelessSection {
         MedicationItemHolder itemHolder = (MedicationItemHolder) holder;
         Medication medication = medicationList.get(position);
         if (medication != null) {
-
             itemHolder.tvMedicationName.setText(medication.getName());
 //            String durationStr = Utility.formatRecyclerViewDateDaysOnly(medication.getStartDate()) + " - " + Utility.formatRecyclerViewDateDaysOnly(medication.getEndDate());
             String durationStr = Utility.formatModifyRecyclerViewDate(medication.getStartDate(), medication.getEndDate());

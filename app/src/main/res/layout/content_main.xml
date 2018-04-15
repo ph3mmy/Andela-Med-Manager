@@ -10,6 +10,42 @@
     android:orientation="vertical"
     tools:showIn="@layout/activity_main">
 
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="@dimen/margin_5"
+        android:background="@color/colorPrimary">
+
+        <ImageView
+            android:id="@+id/iv_back_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="@dimen/margin_5"
+            android:contentDescription="@string/previous_year"
+            app:srcCompat="@drawable/ic_left_arrow_white_24dp"/>
+
+        <TextView
+            android:id="@+id/tv_active_year"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            tools:text="2018"
+            android:textStyle="bold"
+            android:textColor="@color/white"
+            android:textSize="@dimen/text_size_18"
+            android:layout_centerInParent="true"/>
+
+        <ImageView
+            android:id="@+id/iv_forward_arrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:srcCompat="@drawable/ic_right_arrow_white_24dp"
+            android:padding="@dimen/margin_5"
+            android:contentDescription="@string/next_year"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true" />
+
+    </RelativeLayout>
+
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rv_medication"
         android:layout_width="match_parent"

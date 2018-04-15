@@ -25,4 +25,7 @@
     <string name="gender">Gender:</string>
     <string name="profile_image">Profile Image</string>
     <string name="not_set">Not Set</string>
+    <string name="previous_year">Previous Year</string>
+    <string name="next_year">Next Year</string>
+    <string name="pill_image">Pill Image</string>
 </resources>

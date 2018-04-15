@@ -45,12 +45,12 @@ public interface MedicationDao {
     LiveData<List<Medication>> getMedicationByMonth();
 
     // returns the list of medication for the current year only
-    @Query("select * from Medication where strftime('%Y', datetime(dateCreated/1000, 'unixepoch')) = :lastYear or " +
-            "strftime('%Y', datetime(dateCreated/1000, 'unixepoch')) = :thisYear order by dateCreated DESC")
-    LiveData<List<Medication>> getAllMedicationsForCurrentYear(String lastYear, String thisYear);
+    @Query("select * from Medication where strftime('%Y', datetime(dateCreated/1000, 'unixepoch')) = :thisYear order by dateCreated DESC")
+    LiveData<List<Medication>> getAllMedicationsForCurrentYear(String thisYear);
 
-    @Query("select * from Medication where name = :name")
-    Medication loadMedicationWithName(String name);
+    // returns list of medications with the name query
+    @Query("select * from Medication where name like :nameQuery AND strftime('%Y', datetime(dateCreated/1000, 'unixepoch')) = :currentYear order by dateCreated DESC")
+    LiveData<List<Medication>> searchMedicationWithName(String nameQuery, String currentYear);
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     void insertMedication(Medication... medications);

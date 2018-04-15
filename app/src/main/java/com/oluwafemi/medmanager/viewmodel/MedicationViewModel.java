@@ -6,6 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.ViewModel;
 import android.os.AsyncTask;
 import android.support.annotation.NonNull;
+import android.util.Log;
 
 import com.oluwafemi.medmanager.db.MedicationDatabase;
 import com.oluwafemi.medmanager.model.Medication;
@@ -35,14 +36,19 @@ public class MedicationViewModel extends AndroidViewModel {
     }
 
     // get all medication for the current year
-    public LiveData<List<Medication>> getMedicationForCurrentYear(String lastYear, String thisYear) {
-        return medicationDatabase.medicationDao().getAllMedicationsForCurrentYear(lastYear, thisYear);
+    public LiveData<List<Medication>> getMedicationForCurrentYear(String currentYear) {
+        return medicationDatabase.medicationDao().getAllMedicationsForCurrentYear(currentYear);
     }
 
-    // get all medication by month
-    public LiveData<List<Medication>> getMedicationByMonthList(String monthIndex) {
-        return medicationDatabase.medicationDao().getMedicationByMonth();
+    // get search medication by name for the current year
+    public LiveData<List<Medication>> searchYearlyMedicationWithName(String nameQuery, String activeYear) {
+        return medicationDatabase.medicationDao().searchMedicationWithName("%"+nameQuery+"%", activeYear);
     }
+
+    // get search medication by name for the current year
+   /* public LiveData<List<Medication>> searchYearlyMedicationWithName(String nameQuery, String activeYear) {
+        return medicationDatabase.medicationDao().searchMedicationWithName(nameQuery, activeYear);
+    }*/
 
     public void insertMedication(Medication medication) {
         new InsertMedicationAsyncTask(medicationDatabase, medication).execute();
