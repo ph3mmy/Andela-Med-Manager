@@ -28,4 +28,6 @@
     <string name="previous_year">Previous Year</string>
     <string name="next_year">Next Year</string>
     <string name="pill_image">Pill Image</string>
+    <string name="permission_rationale">Calendar access is needed for medication reminders</string>
+    <string name="repeat_reminder">Repeat Reminder:</string>
 </resources>

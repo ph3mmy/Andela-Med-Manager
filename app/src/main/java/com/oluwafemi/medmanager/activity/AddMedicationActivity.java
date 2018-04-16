@@ -16,19 +16,38 @@
 
 package com.oluwafemi.medmanager.activity;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
+import android.annotation.TargetApi;
+import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.ContentValues;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.databinding.DataBindingUtil;
+import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.CalendarContract;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
+import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -43,10 +62,16 @@ import com.oluwafemi.medmanager.viewmodel.MedicationViewModel;
 import com.oluwafemi.medmanager.viewmodel.UserViewModel;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
+import java.util.Map;
+
+import static android.Manifest.permission.READ_CONTACTS;
+import static android.Manifest.permission.WRITE_CALENDAR;
 
 /**
  * Created by phemi-mint on 4/4/18.
@@ -55,16 +80,19 @@ import java.util.Locale;
 public class AddMedicationActivity extends AppCompatActivity implements View.OnClickListener {
 
     private static final String TAG = "AddMedicationActivity";
+    private static int MY_PERMISSIONS_REQUEST_WRITE_CALENDAR = 0;
     ActivityAddMedicationBinding binding;
-
     String[] dailyFreq = {"Once Daily", "2 Times Daily", "3 Times Daily"};
-    String[] repeatOptions = {"Does not repeat", "Repeat"};
+    String[] repeatOptions = {"No repeat", "Repeat"};
+    static Map<String, Integer> reminderRepeatMap;
+    List<String> reminderRepeatList;
+    User user;
+    UserViewModel userViewModel;
     private Date startDate, endDate;
     private String startDateStr, endDateStr, selectedDailyFreq, selectedReminderRepeat, selectedReminderTime = null;
     private boolean hasReminder = false;
 
-    User user;
-    UserViewModel userViewModel;
+    int reminderSelectedHour, reminderSelectedMins;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -73,11 +101,12 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
         // init spinners and switch
         initFrequencySpinner();
-        initRepeatSpinner();
-        initReminderSwitch();
+        initRepeatMap();
 
         // get the user object to update with latest medication info
         getExistingUser();
+
+        askForPermission(WRITE_CALENDAR, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
 
         // set onclicklistener
         binding.ivClose.setOnClickListener(this);
@@ -87,26 +116,67 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         binding.tieReminderTime.setOnClickListener(this);
     }
 
+    private void initRepeatMap() {
+        reminderRepeatMap = new HashMap<>();
+        reminderRepeatMap.put("Next 4 hours", 4);
+        reminderRepeatMap.put("Next 6 hours", 6);
+        reminderRepeatMap.put("Next 8 hours", 8);
+        reminderRepeatMap.put("Next 12 hours", 12);
+        reminderRepeatMap.put("No Repeat", 0);
+    }
+
     // add items and listener to reminder repeat spinner
     private void initRepeatSpinner() {
-        selectedReminderRepeat = repeatOptions[0];
-        binding.spinnerReminderFreq.setItems(repeatOptions);
+        selectedReminderRepeat = reminderRepeatList.get(0);
+        binding.spinnerReminderFreq.setItems(reminderRepeatList);
         binding.spinnerReminderFreq.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
-                selectedReminderRepeat = repeatOptions[position];
+                selectedReminderRepeat = reminderRepeatList.get(position);
+//                selectedReminderRepeat = repeatOptions[position];
+
             }
         });
+    }
+
+    // auto generate list for reminder repeat spinner based on medication frequency
+    private List<String> generateRepeatList(int position) {
+        List<String> repeatList = new ArrayList<>();
+        switch (position) {
+            case 0:
+                // drug to be taken once daily: therefore there's no reminder repeat in the same day
+                repeatList.add("No Repeat");
+                break;
+            case 1:
+                // 2 times daily: reminder needed for the second dosage (6, 8 or 12 hours from the first
+                repeatList.add("Next 6 hours");
+                repeatList.add("Next 8 hours");
+                repeatList.add("Next 12 hours");
+                repeatList.add("No Repeat");
+                break;
+            case 2:  // 3 times daily: next two dosage can be 4-4hours, 6-6hours, 8-8hours from the first
+                repeatList.add("Next 4 hours");
+                repeatList.add("Next 6 hours");
+                repeatList.add("Next 8 hours");
+                repeatList.add("No Repeat");
+
+                break;
+        }
+        return repeatList;
     }
 
     // add items and listener to frequency spinner
     private void initFrequencySpinner() {
         selectedDailyFreq = dailyFreq[0];
+        reminderRepeatList = generateRepeatList(0);
+        initRepeatSpinner();
         binding.spinnerMedFreq.setItems(dailyFreq);
         binding.spinnerMedFreq.setOnItemSelectedListener(new MaterialSpinner.OnItemSelectedListener() {
             @Override
             public void onItemSelected(MaterialSpinner view, int position, long id, Object item) {
                 selectedDailyFreq = dailyFreq[position];
+                reminderRepeatList = generateRepeatList(position);
+                initRepeatSpinner();
             }
         });
 
@@ -168,6 +238,10 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                 selectedReminderTime = selectedHour + ":" + selectedMinute;
+                reminderSelectedHour = selectedHour;
+                reminderSelectedMins = selectedMinute;
+
+                binding.tieReminderTime.setError(null);
                 binding.tieReminderTime.setText(selectedReminderTime);
             }
         }, hour, minute, false);
@@ -177,26 +251,22 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
     // validate form fields and save valid medication to bd
     private void validateAndSaveMedication() {
-        String name, description, frequency, mStartDate, mEndDate, mReminderTime, reminderRepeatStatus;
+        String name, description;
 
         name = binding.tieMedName.getText().toString();
         description = binding.tieMedDesc.getText().toString();
-//        frequency = binding.tieMedName.getText().toString();
-        mStartDate = binding.tieMedStartDate.getText().toString();
-        mEndDate = binding.tieMedEndDate.getText().toString();
-        mReminderTime = binding.tieReminderTime.getText().toString();
         boolean isFormValid;
 
         TextInputLayout[] allLayouts;
         TextInputEditText[] allEditTexts;
 
-        if (!hasReminder) {
+        /*if (!hasReminder) {
             allLayouts = new TextInputLayout[]{binding.tilMedName, binding.tilMedDesc, binding.tilMedStartDate, binding.tilMedEndDate};
             allEditTexts = new TextInputEditText[]{binding.tieMedName, binding.tieMedDesc, binding.tieMedStartDate, binding.tieMedEndDate};
-        } else {
+        } else {*/
             allLayouts = new TextInputLayout[]{binding.tilMedName, binding.tilMedDesc, binding.tilMedStartDate, binding.tilMedEndDate, binding.tilReminderTime};
             allEditTexts = new TextInputEditText[]{binding.tieMedName, binding.tieMedDesc, binding.tieMedStartDate, binding.tieMedEndDate, binding.tieReminderTime};
-        }
+//        }
         isFormValid = Utility.fieldValidation(allEditTexts, allLayouts);
 
         if (!isFormValid) {
@@ -223,6 +293,10 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         MedicationViewModel medicationViewModel = ViewModelProviders.of(this).get(MedicationViewModel.class);
         medicationViewModel.insertMedication(medication);
         updateUserProfileWithMedication(medication);
+        // set reminder
+        Log.e(TAG, "saveMedication: med daily freq = " + medication.getFrequency() + " med time repeat = " + medication.getReminderRepeatFrequency()
+                + " hour from map = " + reminderRepeatMap.get(medication.getReminderRepeatFrequency()));
+        addReminder(medication);
     }
 
     // update user medication info
@@ -251,7 +325,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
                         setStartDateToView(date, dateStr);
                     } else {
                         Toast.makeText(AddMedicationActivity.this, "Start date cannot be greater than end date", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "onDateSetListener: mot true" );
+                        Log.e(TAG, "onDateSetListener: mot true");
                     }
                 } else {
                     if (startDate == null) {
@@ -260,7 +334,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
                         setEndDateToView(date, dateStr);
                     } else {
                         Toast.makeText(AddMedicationActivity.this, "Start date cannot be greater than end date", Toast.LENGTH_SHORT).show();
-                        Log.e(TAG, "onDateSetListener: mot true" );
+                        Log.e(TAG, "onDateSetListener: mot true");
                     }
                 }
             }
@@ -288,7 +362,165 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         binding.tieMedEndDate.setText(dateStr);
     }
 
+    // helper to help validate end and start date
     private boolean isStartDateGreater(Date startDate, Date endDate) {
         return startDate.getTime() >= endDate.getTime();
     }
+
+    private void addReminder(Medication medication) {
+
+        long medStartLong = medication.getStartDate().getTime();
+        long medEndLong = medication.getEndDate().getTime();
+
+        Calendar startEndCal = Calendar.getInstance();
+        startEndCal.setTime(medication.getStartDate());
+        int year = startEndCal.get(Calendar.YEAR);
+        int month = startEndCal.get(Calendar.MONTH);
+        int day = startEndCal.get(Calendar.DAY_OF_MONTH);
+
+        // End Date Calendar
+        Calendar endCal = Calendar.getInstance();
+        endCal.setTime(medication.getEndDate());
+        int endYear = endCal.get(Calendar.YEAR);
+        int endMonth = endCal.get(Calendar.MONTH);
+        int endDay = endCal.get(Calendar.DAY_OF_MONTH);
+
+        if (medication.getFrequency().equalsIgnoreCase(dailyFreq[0])) { // once daily
+            startEndCal.set(year, month, day, reminderSelectedHour, reminderSelectedMins, 0);
+            endCal.set(endYear, endMonth, endDay, reminderSelectedHour, reminderSelectedMins, 0);
+
+        } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[1])) { // twice daily
+            // get the number of hours to add to the HH param to create a new calendar
+            int newHH = reminderSelectedHour + reminderRepeatMap.get(medication.getReminderRepeatFrequency());
+            Log.e(TAG, "addReminder: twice old hr = " + reminderSelectedHour + " new HH = " + newHH);
+            startEndCal.set(year, month, day, newHH, reminderSelectedMins, 0);
+            endCal.set(endYear, endMonth, endDay, newHH, reminderSelectedMins, 0);
+
+        } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[2])) { // three times daily
+            // get the number of hours to add to the HH param to create a new calendar
+            int newHH = reminderSelectedHour + reminderRepeatMap.get(medication.getReminderRepeatFrequency());
+            Log.e(TAG, "addReminder: THRICE old hr = " + reminderSelectedHour + " new HH = " + newHH);
+            startEndCal.set(year, month, day, newHH, reminderSelectedMins, 0);
+            endCal.set(endYear, endMonth, endDay, newHH, reminderSelectedMins, 0);
+        }
+
+        // create a new event with the new calendar
+        ContentResolver cr = getContentResolver();
+        ContentValues calEvent = new ContentValues();
+        calEvent.put(CalendarContract.Events.CALENDAR_ID, 1); // XXX pick)
+        calEvent.put(CalendarContract.Events.TITLE, "Time to take your medication (" + medication.getName() + ")");
+        calEvent.put(CalendarContract.Events.DTSTART, startEndCal.getTimeInMillis());
+        calEvent.put(CalendarContract.Events.DTEND, endCal.getTimeInMillis());
+        calEvent.put(CalendarContract.Events.HAS_ALARM, 1);
+        calEvent.put(CalendarContract.Events.EVENT_TIMEZONE, CalendarContract.Calendars.CALENDAR_TIME_ZONE);
+
+        //save an event
+        @SuppressLint("MissingPermission") final Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, calEvent);
+
+        int dbId = Integer.parseInt(uri.getLastPathSegment());
+
+        if (medication.getFrequency().equalsIgnoreCase(dailyFreq[0])) { // is once, set one-off reminder
+            setReminder(cr, dbId, 5);
+        } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[1])) { // is twice, set reminder twice
+            setReminder(cr, dbId, 5); // the final reminder goes off 5 mins before the due date
+
+            // calculate hours to set the first reminder
+            int firstHour = reminderRepeatMap.get(medication.getReminderRepeatFrequency()) * 60;
+            Log.e(TAG, "addReminder: first hour == " + firstHour);
+            setReminder(cr, dbId, firstHour);
+        } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[2])) { // is twice, set reminder twice
+
+            // final reminder
+            setReminder(cr, dbId, 5);
+
+            // second reminder
+            int secondDosage = reminderRepeatMap.get(medication.getReminderRepeatFrequency()) * 60;
+            Log.e(TAG, "addReminder: second hour == " + secondDosage);
+            setReminder(cr, dbId, secondDosage);
+
+            // 3rd reminder
+            int firstReminder = 2 * secondDosage;
+            setReminder(cr, dbId, firstReminder); // 3rd reminder
+        }
+    }
+
+    // routine to add reminders with the event
+    public void setReminder(ContentResolver cr, long eventID, int timeBefore) {
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            askForPermission(WRITE_CALENDAR, MY_PERMISSIONS_REQUEST_WRITE_CALENDAR);
+        }
+        try {
+            ContentValues values = new ContentValues();
+            values.put(CalendarContract.Reminders.MINUTES, timeBefore);
+            values.put(CalendarContract.Reminders.EVENT_ID, eventID);
+            values.put(CalendarContract.Reminders.METHOD, CalendarContract.Reminders.METHOD_ALERT);
+            Uri uri = cr.insert(CalendarContract.Reminders.CONTENT_URI, values);
+
+            int added = Integer.parseInt(uri.getLastPathSegment());
+            if (added > 0) {
+                Intent view = new Intent(Intent.ACTION_VIEW);
+                view.setData(uri); // enter the uri of the event not the reminder
+
+                if (Build.VERSION.SDK_INT > Build.VERSION_CODES.KITKAT_WATCH) {
+                    view.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK
+                            | Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP
+                            | Intent.FLAG_ACTIVITY_NO_HISTORY | Intent.FLAG_ACTIVITY_NEW_DOCUMENT);
+                } else {
+                    view.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
+                            Intent.FLAG_ACTIVITY_SINGLE_TOP | Intent.FLAG_ACTIVITY_CLEAR_TOP |
+                            Intent.FLAG_ACTIVITY_NO_HISTORY |
+                            Intent.FLAG_ACTIVITY_CLEAR_WHEN_TASK_RESET);
+                }
+                //view the event in calendar
+                startActivity(view);
+            }
+            /*Cursor c = CalendarContract.Reminders.query(cr, eventID,
+                    new String[]{CalendarContract.Reminders.MINUTES});
+            if (c.moveToFirst()) {
+                System.out.println("calendar"
+                        + c.getInt(c.getColumnIndex(CalendarContract.Reminders.MINUTES)));
+            }
+            c.close();*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    // function to remove an event from the calendar using the eventId stored within the Task object.
+    /*public void removeEvent(Context context) {
+        ContentResolver cr = context.getContentResolver();
+
+        int iNumRowsDeleted = 0;
+
+        Uri eventsUri = Uri.parse(CALENDAR_URI_BASE+"events");
+        Uri eventUri = ContentUris.withAppendedId(eventsUri, this._eventId);
+        iNumRowsDeleted = cr.delete(eventUri, null, null);
+
+        Log.i(DEBUG_TAG, "Deleted " + iNumRowsDeleted + " calendar entry.");
+    }*/
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        if (requestCode == MY_PERMISSIONS_REQUEST_WRITE_CALENDAR) {
+            if (grantResults.length == 1 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                validateAndSaveMedication();
+            } else {
+                Toast.makeText(this, R.string.permission_rationale, Toast.LENGTH_SHORT).show();
+                finish();
+            }
+        }
+    }
+
+    private void askForPermission(String permission, Integer requestCode) {
+        if (ContextCompat.checkSelfPermission(AddMedicationActivity.this, permission) != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(AddMedicationActivity.this, permission)) {
+                ActivityCompat.requestPermissions(AddMedicationActivity.this, new String[]{permission}, requestCode);
+            } else {
+                ActivityCompat.requestPermissions(AddMedicationActivity.this, new String[]{permission}, requestCode);
+            }
+        }/* else {
+            Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
+        }*/
+    }
+
 }

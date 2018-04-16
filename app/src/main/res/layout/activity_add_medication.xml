@@ -199,6 +199,7 @@
         <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:visibility="gone"
             android:layout_margin="@dimen/margin_10">
 
             <TextView
@@ -221,19 +222,9 @@
                 android:layout_alignParentRight="true" />
         </RelativeLayout>
 
-        <LinearLayout
-            android:id="@+id/ll_reminder_layout"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:visibility="gone"
-            android:baselineAligned="false"
-            android:weightSum="2">
-
         <android.support.design.widget.TextInputLayout
             android:id="@+id/til_reminder_time"
-            android:layout_width="0dp"
-            android:layout_weight="1"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
             android:textColor="@color/darkerGray"
@@ -255,9 +246,30 @@
         </android.support.design.widget.TextInputLayout>
 
 
+
+        <LinearLayout
+            android:id="@+id/ll_reminder_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="visible"
+            android:gravity="center"
+            android:baselineAligned="false"
+            android:weightSum="2">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_weight="0.8"
+                android:text="@string/repeat_reminder"
+                android:layout_marginStart="@dimen/margin_10"
+                android:layout_marginLeft="@dimen/margin_10"
+                android:textSize="@dimen/text_size_16"
+                android:layout_height="wrap_content" />
+
+
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_weight="1"
+                android:layout_weight="1.2"
                 android:layout_height="wrap_content"
                 android:padding="4dp"
                 android:layout_gravity="bottom"
