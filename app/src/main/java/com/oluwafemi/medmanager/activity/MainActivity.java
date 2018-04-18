@@ -29,14 +29,12 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Toast;
 
 import com.oluwafemi.medmanager.R;
-import com.oluwafemi.medmanager.adapter.MedicationRecyclerAdapter;
 import com.oluwafemi.medmanager.adapter.MedicationSectionedAdapter;
 import com.oluwafemi.medmanager.databinding.ActivityMainBinding;
 import com.oluwafemi.medmanager.model.Medication;
@@ -61,7 +59,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     static int activeYear;
 
     ActivityMainBinding binding;
-    MedicationRecyclerAdapter adapter;
     MedicationViewModel medicationViewModel;
     LinearLayoutManager layoutManager;
     private int currentYear;

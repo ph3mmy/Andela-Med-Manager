@@ -16,18 +16,31 @@
 
 package com.oluwafemi.medmanager.util;
 
+import android.content.ContentResolver;
+import android.content.ContentUris;
+import android.content.Context;
+import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.provider.CalendarContract;
 import android.support.design.widget.TextInputEditText;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.util.Log;
+import android.view.View;
+import android.widget.Toast;
+
+import com.oluwafemi.medmanager.Manifest;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -106,6 +119,17 @@ public class Utility {
         return newDate;
     }
 
+    public static void deleteEvent(Context context, int eventCalId) {
+        if (ActivityCompat.checkSelfPermission(context, android.Manifest.permission.WRITE_CALENDAR) != PackageManager.PERMISSION_GRANTED) {
+            Toast.makeText(context, "You do not have the needed permission to delete this medication", Toast.LENGTH_SHORT).show();
+        }
+
+        Uri CALENDAR_URI_BASE = CalendarContract.Events.CONTENT_URI;
+        ContentResolver cr = context.getContentResolver();
+        Uri eventsUri = Uri.parse(CALENDAR_URI_BASE.toString());
+        ContentUris.withAppendedId(eventsUri, eventCalId);
+    }
+
     // format Date
     public static String formatModifyRecyclerViewDate(Date mDate1, Date mDate2) {
         String noOfdays;
@@ -121,10 +145,6 @@ public class Utility {
 
     // format Date
     public static String dateRangeForRecyclerview(Date mDate1, Date mDate2) {
-        /*String noOfdays;
-        long dateDiff = mDate2.getTime() - mDate1.getTime();
-        noOfdays = (dateDiff/(1000*60*60*24) + 1) + " " + "days";
-*/
         // get days only
         SimpleDateFormat daysOnlyFormat = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
         String day1 = daysOnlyFormat.format(mDate1);
@@ -136,26 +156,23 @@ public class Utility {
     public static String convert24hrsTo12hrs(String time) {
         String mTime = null;
         try {
-            final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm", Locale.getDefault());
             final Date dateObj = sdf.parse(time);
-            mTime = new SimpleDateFormat("hh:mm aa").format(dateObj);
+            mTime = new SimpleDateFormat("hh:mm aa", Locale.getDefault()).format(dateObj);
         } catch (final ParseException e) {
             e.printStackTrace();
         }
         return mTime;
     }
 
-    public static long dateTimeLong (Date mDate, String timeStr) {
-        long newDateLOng = 0;
-        try {
-            final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-            final Date dateObj = sdf.parse(timeStr);
-            newDateLOng = (dateObj.getTime() + mDate.getTime());
-
-        } catch (final ParseException e) {
-            e.printStackTrace();
-        }
-        return newDateLOng;
+    // get time in long from date and time
+    public static long dateTimeInLong (Date mDate, String timeStr) {
+        Calendar mCal = Calendar.getInstance();
+        mCal.setTime(mDate);
+        String[] hourMin = timeStr.split(":");
+        mCal.set(Calendar.HOUR_OF_DAY, Integer.parseInt(hourMin[0]));
+        mCal.set(Calendar.MINUTE, Integer.parseInt(hourMin[1]));
+        return mCal.getTimeInMillis();
     }
 
     public static String dateRangeNoOfDays(Date mDate1, Date mDate2) {

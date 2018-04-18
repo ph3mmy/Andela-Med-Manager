@@ -58,10 +58,5 @@ dependencies {
 
     // sectioned recyclerview library
     implementation 'io.github.luizgrp.sectionedrecyclerviewadapter:sectionedrecyclerviewadapter:1.2.0'
-
-    // evernote job library for reminder
-
-    //evernote alarm helper
-    implementation 'com.evernote:android-job:1.2.5'
 }
 apply plugin: 'com.google.gms.google-services'

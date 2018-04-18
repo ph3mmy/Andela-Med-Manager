@@ -156,6 +156,7 @@
                     android:id="@+id/tv_profile_address"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
                     android:textSize="@dimen/text_size_18"/>
 
             </LinearLayout>
@@ -248,7 +249,7 @@
                     android:layout_marginTop="@dimen/margin_20"
                     android:background="@drawable/transparent_button"
                     android:text="@string/log_out"
-                    android:textColor="@color/white" />
+                    android:textColor="@color/colorPrimary" />
 
             </LinearLayout>
         </ScrollView>

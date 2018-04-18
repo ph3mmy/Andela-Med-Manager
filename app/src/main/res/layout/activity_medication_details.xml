@@ -11,24 +11,56 @@
         android:id="@+id/include_toolbar"
         layout="@layout/general_toolbar"/>
 
-    <LinearLayout
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:scrollbars="none">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
         android:orientation="vertical"
         android:gravity="center">
+
+        <android.support.v7.widget.CardView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:cardCornerRadius="@dimen/margin_10"
+            app:cardElevation="5dp"
+            app:cardPreventCornerOverlap="true"
+            app:cardUseCompatPadding="true">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@color/white"
+            android:gravity="center_horizontal"
+            android:orientation="vertical"
+            android:padding="@dimen/margin_10">
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="80dp"
+                android:layout_marginTop="@dimen/margin_20"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="@string/medication_desc"
+                app:srcCompat="@drawable/ic_pills_three"
+                tools:srcCompat="@drawable/ic_pills_three"/>
 
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="@string/medication_name"
+        android:layout_marginTop="@dimen/margin_10"
         android:gravity="center_horizontal"
-        android:textSize="@dimen/text_size_16"/>
+        android:textSize="@dimen/text_size_18"/>
 
     <TextView
         android:id="@+id/tv_med_name"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Para"
+        android:textStyle="bold"
         android:gravity="center_horizontal"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_size_18"/>
@@ -36,16 +68,17 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginTop="@dimen/margin_20"
         android:text="@string/medication_desc"
         android:gravity="center_horizontal"
-        android:textSize="@dimen/text_size_16"/>
+        android:textSize="@dimen/text_size_18"/>
 
     <TextView
         android:id="@+id/tv_med_desc"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Para"
+        android:textStyle="bold"
         android:gravity="center_horizontal"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_size_18"/>
@@ -53,20 +86,24 @@
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="@dimen/margin_10"
+        android:layout_marginTop="@dimen/margin_20"
         android:text="@string/to_be_taken"
         android:gravity="center_horizontal"
-        android:textSize="@dimen/text_size_16"/>
+        android:textSize="@dimen/text_size_18"/>
 
     <TextView
         android:id="@+id/tv_med_freq"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         tools:text="Para"
+        android:textStyle="bold"
+        android:layout_marginBottom="@dimen/text_size_20"
         android:gravity="center_horizontal"
         android:textColor="@color/colorPrimary"
         android:textSize="@dimen/text_size_18"/>
 
+        </LinearLayout>
+        </android.support.v7.widget.CardView>
 
     <android.support.v7.widget.CardView
         android:layout_width="match_parent"
@@ -99,6 +136,30 @@
                 android:textSize="@dimen/text_size_18"
                 android:textStyle="bold"
                 tools:text="Panadol" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:orientation="horizontal">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/repeat_alarm"
+                    android:textSize="@dimen/text_size_16"
+                    android:textColor="@color/colorPrimaryLight" />
+
+                <TextView
+                    android:id="@+id/tv_detail_repeat_alarm"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_20"
+                    android:textColor="@color/white"
+                    android:textSize="@dimen/text_size_18"
+                    android:textStyle="bold"
+                    tools:text="next 6 hours"
+                    android:layout_marginLeft="@dimen/margin_20" />
+            </LinearLayout>
 
             <RelativeLayout
                 android:layout_width="match_parent"
@@ -148,6 +209,6 @@
         </LinearLayout>
     </android.support.v7.widget.CardView>
     </LinearLayout>
-
+    </ScrollView>
 </LinearLayout>
 </layout>

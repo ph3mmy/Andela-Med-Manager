@@ -45,6 +45,7 @@ public class Medication {
     public boolean hasReminder;
     public String reminderTime;
     public String reminderRepeatFrequency;
+    public int calendarEventId;
 
     public String getId() {
         return Id;
@@ -124,5 +125,13 @@ public class Medication {
 
     public void setReminderRepeatFrequency(String reminderRepeatFrequency) {
         this.reminderRepeatFrequency = reminderRepeatFrequency;
+    }
+
+    public int getCalendarEventId() {
+        return calendarEventId;
+    }
+
+    public void setCalendarEventId(int calendarEventId) {
+        this.calendarEventId = calendarEventId;
     }
 }

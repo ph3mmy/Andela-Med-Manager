@@ -18,19 +18,13 @@ package com.oluwafemi.medmanager.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
-import android.app.AlertDialog;
 import android.app.TimePickerDialog;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
 import android.content.ContentResolver;
-import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.databinding.DataBindingUtil;
 import android.net.Uri;
 import android.os.Build;
@@ -47,7 +41,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.CompoundButton;
-import android.widget.Switch;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
@@ -55,7 +48,6 @@ import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.databinding.ActivityAddMedicationBinding;
 import com.oluwafemi.medmanager.fragment.DatePickerFragment;
-import com.oluwafemi.medmanager.job.MedicationReminderJob;
 import com.oluwafemi.medmanager.model.Medication;
 import com.oluwafemi.medmanager.model.User;
 import com.oluwafemi.medmanager.util.Utility;
@@ -71,7 +63,6 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
-import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.WRITE_CALENDAR;
 
 /**
@@ -94,6 +85,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
     private boolean hasReminder = false;
 
     int reminderSelectedHour, reminderSelectedMins;
+    private MedicationViewModel medicationViewModel;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -183,20 +175,6 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
     }
 
-    private void initReminderSwitch() {
-        binding.switchReminder.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                hasReminder = b;
-                if (!compoundButton.isChecked()) {
-                    binding.llReminderLayout.setVisibility(View.GONE);
-                } else {
-                    binding.llReminderLayout.setVisibility(View.VISIBLE);
-                }
-            }
-        });
-    }
-
     private void getExistingUser() {
         userViewModel = ViewModelProviders.of(this).get(UserViewModel.class);
         userViewModel.getUserList().observe(this, new Observer<List<User>>() {
@@ -238,12 +216,15 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         dlg = new TimePickerDialog(AddMedicationActivity.this, new TimePickerDialog.OnTimeSetListener() {
             @Override
             public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
-                selectedReminderTime = selectedHour + ":" + selectedMinute;
+//                selectedReminderTime = selectedHour + ":" + selectedMinute;
                 reminderSelectedHour = selectedHour;
                 reminderSelectedMins = selectedMinute;
 
+                // format time
+                String curTime = String.format(Locale.getDefault(),"%02d:%02d", selectedHour, selectedMinute);
                 binding.tieReminderTime.setError(null);
-                binding.tieReminderTime.setText(selectedReminderTime);
+                selectedReminderTime = curTime;
+                binding.tieReminderTime.setText(curTime);
             }
         }, hour, minute, false);
         dlg.setTitle("Select Reminder Time");
@@ -261,13 +242,9 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         TextInputLayout[] allLayouts;
         TextInputEditText[] allEditTexts;
 
-        /*if (!hasReminder) {
-            allLayouts = new TextInputLayout[]{binding.tilMedName, binding.tilMedDesc, binding.tilMedStartDate, binding.tilMedEndDate};
-            allEditTexts = new TextInputEditText[]{binding.tieMedName, binding.tieMedDesc, binding.tieMedStartDate, binding.tieMedEndDate};
-        } else {*/
             allLayouts = new TextInputLayout[]{binding.tilMedName, binding.tilMedDesc, binding.tilMedStartDate, binding.tilMedEndDate, binding.tilReminderTime};
             allEditTexts = new TextInputEditText[]{binding.tieMedName, binding.tieMedDesc, binding.tieMedStartDate, binding.tieMedEndDate, binding.tieReminderTime};
-//        }
+
         isFormValid = Utility.fieldValidation(allEditTexts, allLayouts);
 
         if (!isFormValid) {
@@ -291,12 +268,9 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
     // save medication and close activity
     private void saveMedication(Medication medication) {
-        MedicationViewModel medicationViewModel = ViewModelProviders.of(this).get(MedicationViewModel.class);
-        medicationViewModel.insertMedication(medication);
-        updateUserProfileWithMedication(medication);
+        medicationViewModel = ViewModelProviders.of(this).get(MedicationViewModel.class);
+
         // set reminder
-        Log.e(TAG, "saveMedication: med daily freq = " + medication.getFrequency() + " med time repeat = " + medication.getReminderRepeatFrequency()
-                + " hour from map = " + reminderRepeatMap.get(medication.getReminderRepeatFrequency()));
         addReminder(medication);
     }
 
@@ -370,9 +344,6 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
     private void addReminder(Medication medication) {
 
-        // set notification reminder
-        MedicationReminderJob.setMedicationReminder(medication, reminderRepeatMap);
-
         Calendar startEndCal = Calendar.getInstance();
         startEndCal.setTime(medication.getStartDate());
         int year = startEndCal.get(Calendar.YEAR);
@@ -417,6 +388,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         @SuppressLint("MissingPermission") final Uri uri = cr.insert(CalendarContract.Events.CONTENT_URI, calEvent);
 
         int dbId = Integer.parseInt(uri.getLastPathSegment());
+        medication.setCalendarEventId(dbId);
 
         if (medication.getFrequency().equalsIgnoreCase(dailyFreq[0])) { // is once, set one-off reminder
             setReminder(cr, dbId, 5);
@@ -439,6 +411,9 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
             int firstReminder = 2 * secondDosage;
             setReminder(cr, dbId, firstReminder); // 3rd reminder
         }
+
+        medicationViewModel.insertMedication(medication);
+        updateUserProfileWithMedication(medication);
     }
 
     // routine to add reminders with the event
@@ -476,19 +451,6 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
             e.printStackTrace();
         }
     }
-
-    // function to remove an event from the calendar using the eventId stored within the Task object.
-    /*public void removeEvent(Context context) {
-        ContentResolver cr = context.getContentResolver();
-
-        int iNumRowsDeleted = 0;
-
-        Uri eventsUri = Uri.parse(CALENDAR_URI_BASE+"events");
-        Uri eventUri = ContentUris.withAppendedId(eventsUri, this._eventId);
-        iNumRowsDeleted = cr.delete(eventUri, null, null);
-
-        Log.i(DEBUG_TAG, "Deleted " + iNumRowsDeleted + " calendar entry.");
-    }*/
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {

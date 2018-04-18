@@ -37,4 +37,5 @@
     <string name="to_be_taken">To be taken:</string>
     <string name="alarm_time">Alarm/Notification Time</string>
     <string name="delete">Delete</string>
+    <string name="repeat_alarm">Repeat Alarm:</string>
 </resources>

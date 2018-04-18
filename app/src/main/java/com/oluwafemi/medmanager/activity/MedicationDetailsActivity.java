@@ -1,10 +1,13 @@
 package com.oluwafemi.medmanager.activity;
 
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.DialogInterface;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 
@@ -51,6 +54,7 @@ public class MedicationDetailsActivity extends AppCompatActivity {
         binding.tvStartDate.setText(Utility.formatRecyclerViewDate(medication.getStartDate()));
         binding.tvEndDate.setText(Utility.formatRecyclerViewDate(medication.getEndDate()));
         binding.tvMedFreq.setText(medication.getFrequency());
+        binding.tvDetailRepeatAlarm.setText(medication.getReminderRepeatFrequency());
     }
 
     @Override
@@ -62,9 +66,29 @@ public class MedicationDetailsActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_delete) {
-            medicationViewModel.deleteMedication(medication);
-            finish();
+            showWarningDialog();
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    private void showWarningDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Warning");
+        builder.setMessage("Are you sure you want to delete this medication ?");
+        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+        builder.setPositiveButton("Yes, Proceed", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                medicationViewModel.deleteMedication(medication); // delete medication from db
+                Utility.deleteEvent(MedicationDetailsActivity.this, medication.getCalendarEventId()); // remove associated calendar notification
+                finish();
+            }
+        });
+        builder.show();
     }
 }
