@@ -29,12 +29,12 @@
                 android:background="@color/colorPrimaryLight"
                 android:contentDescription="@string/pill_image"
                 android:layout_centerVertical="true"
-                app:srcCompat="@drawable/ic_pill_two"
+                app:srcCompat="@drawable/ic_pills_three"
                 />
 
         <LinearLayout
             android:id="@+id/ll_name_freq"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/iv_pill"
             android:orientation="vertical"
@@ -61,9 +61,27 @@
                 android:layout_marginTop="@dimen/margin_5"
                 android:textSize="@dimen/text_size_12"
                 android:gravity="center"
+                android:textColor="@color/colorPrimary"
                 android:paddingTop="@dimen/margin_2"
                 android:paddingBottom="@dimen/margin_2"
-                tools:text="Twice Daily" /><!--
+                tools:text="Twice Daily" />
+
+
+            <TextView
+                android:id="@+id/tv_alarm_time"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_14"
+                android:drawableEnd="@drawable/ic_bell_solid"
+                android:drawablePadding="@dimen/margin_5"
+                android:layout_gravity="center_vertical|end"
+                android:textColor="@color/colorPrimaryDark"
+                tools:text="8:00am"
+                android:layout_marginEnd="@dimen/margin_10"
+                android:drawableRight="@drawable/ic_bell_solid"
+                android:layout_marginRight="@dimen/margin_10" />
+
+            <!--
 
             <View
                 android:layout_width="match_parent"
@@ -83,15 +101,15 @@
 
         </LinearLayout>
             <TextView
-                android:id="@+id/tv_alarm_time"
+                android:id="@+id/tv_active_passive"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:drawablePadding="@dimen/margin_10"
                 android:layout_alignParentEnd="true"
-                android:text="8:00am"
-                android:textColor="@color/colorPrimary"
+                tools:text="Active"
+                android:layout_marginTop="@dimen/margin_5"
+                android:textColor="@color/inactive_gray_color"
                 android:gravity="end|center_vertical"
-                android:drawableTop="@drawable/ic_bell_outline"
+                android:drawableTop="@drawable/ic_dot"
                 android:layout_alignParentRight="true" />
         </RelativeLayout>
         <View
@@ -101,14 +119,17 @@
             android:background="@color/colorPrimary"
             android:layout_marginBottom="@dimen/margin_2"/>
 
-        <TextView
-            android:id="@+id/tv_duration"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textSize="@dimen/text_size_16"
-            android:gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/margin_5"
-            tools:text="5 days || Mon - Fri" />
+
+
+            <TextView
+                android:id="@+id/tv_duration"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textSize="@dimen/text_size_14"
+                android:textAllCaps="false"
+                android:layout_marginBottom="@dimen/margin_5"
+                android:gravity="center_horizontal"
+                tools:text="5 days || Mon - Fri" />
         </LinearLayout>
     </android.support.v7.widget.CardView>
 </layout>

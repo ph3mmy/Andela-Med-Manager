@@ -24,7 +24,10 @@ import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Date;
 import java.util.Locale;
 
@@ -114,6 +117,73 @@ public class Utility {
         String day1 = daysOnlyFormat.format(mDate1);
         String day2 = daysOnlyFormat.format(mDate2);
         return noOfdays + " || " + day1 + " - " + day2;
+    }
+
+    // format Date
+    public static String dateRangeForRecyclerview(Date mDate1, Date mDate2) {
+        /*String noOfdays;
+        long dateDiff = mDate2.getTime() - mDate1.getTime();
+        noOfdays = (dateDiff/(1000*60*60*24) + 1) + " " + "days";
+*/
+        // get days only
+        SimpleDateFormat daysOnlyFormat = new SimpleDateFormat("EEEE, MMMM d", Locale.getDefault());
+        String day1 = daysOnlyFormat.format(mDate1);
+        String day2 = daysOnlyFormat.format(mDate2);
+        return day1 + " - " + day2;
+    }
+
+    // converts 24hrs time in string to 12 hrs time
+    public static String convert24hrsTo12hrs(String time) {
+        String mTime = null;
+        try {
+            final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            final Date dateObj = sdf.parse(time);
+            mTime = new SimpleDateFormat("hh:mm aa").format(dateObj);
+        } catch (final ParseException e) {
+            e.printStackTrace();
+        }
+        return mTime;
+    }
+
+    public static long dateTimeLong (Date mDate, String timeStr) {
+        long newDateLOng = 0;
+        try {
+            final SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            final Date dateObj = sdf.parse(timeStr);
+            newDateLOng = (dateObj.getTime() + mDate.getTime());
+
+        } catch (final ParseException e) {
+            e.printStackTrace();
+        }
+        return newDateLOng;
+    }
+
+    public static String dateRangeNoOfDays(Date mDate1, Date mDate2) {
+        String noOfdays;
+        long dateDiff = mDate2.getTime() - mDate1.getTime();
+        long nDays = dateDiff / (1000 * 60 * 60 * 24) + 1;
+        if (nDays == 1) {
+            noOfdays = nDays + " " + "day";
+        } else noOfdays = nDays + " " + "days";
+
+        return noOfdays;
+    }
+
+    // checks if the drug endDate has passed
+    public static boolean isEndDatePassed (Date endDate) {
+        long todayDate = System.currentTimeMillis();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy", Locale.getDefault());
+        String mString = sdf.format(endDate);
+        String completeDate = mString + " " + "23:59:59";
+        SimpleDateFormat fSdf = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss", Locale.getDefault());
+        Date finalDate = null;
+        try {
+            finalDate = fSdf.parse(completeDate);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        long finalDateLong = finalDate.getTime();
+        return todayDate > finalDateLong;
     }
 
     // get formattted title date for recycler list headers/sections

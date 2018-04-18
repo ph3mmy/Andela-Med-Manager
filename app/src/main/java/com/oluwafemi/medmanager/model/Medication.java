@@ -20,6 +20,8 @@ import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
+import org.parceler.Parcel;
+
 import java.util.Date;
 import java.util.UUID;
 
@@ -27,21 +29,22 @@ import java.util.UUID;
  * Created by phemi-mint on 3/28/18.
  */
 
+@Parcel
 @Entity
 public class Medication {
 
     @NonNull
     @PrimaryKey
-    private String Id = UUID.randomUUID().toString();
-    private String name;
-    private String description;
-    private String frequency;
-    private Date startDate;
-    private Date endDate;
-    private long dateCreated;
-    private boolean hasReminder;
-    private String reminderTime;
-    private String reminderRepeatFrequency;
+    public String Id = UUID.randomUUID().toString();
+    public String name;
+    public String description;
+    public String frequency;
+    public Date startDate;
+    public Date endDate;
+    public long dateCreated;
+    public boolean hasReminder;
+    public String reminderTime;
+    public String reminderRepeatFrequency;
 
     public String getId() {
         return Id;

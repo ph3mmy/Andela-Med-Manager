@@ -51,5 +51,15 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 
+    <TextView
+        android:id="@+id/tv_empty_text"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_margin="@dimen/margin_30"
+        android:gravity="center"
+        android:visibility="gone"
+        android:textSize="@dimen/text_size_20"
+        android:text="@string/empty_text"/>
+
 </LinearLayout>
 </layout>

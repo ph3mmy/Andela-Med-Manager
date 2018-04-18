@@ -30,4 +30,11 @@
     <string name="pill_image">Pill Image</string>
     <string name="permission_rationale">Calendar access is needed for medication reminders</string>
     <string name="repeat_reminder">Repeat Reminder:</string>
+    <string name="bullet">\u2022</string>
+    <string name="login_page_logo">Login Page Logo</string>
+    <string name="login_with_your_google_account">Login with your Google Account</string>
+    <string name="empty_text">No Medication added yet, Click on the plus icon to add one</string>
+    <string name="to_be_taken">To be taken:</string>
+    <string name="alarm_time">Alarm/Notification Time</string>
+    <string name="delete">Delete</string>
 </resources>

@@ -169,38 +169,47 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         medicationViewModel.getMedicationForCurrentYear(String.valueOf(activeYear)).observe(this, new Observer<List<Medication>>() {
             @Override
             public void onChanged(@Nullable List<Medication> medications) {
-                sectionMedicationIntoMonths(medications);
+                    sectionMedicationIntoMonths(medications);
+
             }
         });
     }
 
     // section medications into months
     private void sectionMedicationIntoMonths (List<Medication> medicationList) {
-        SectionedRecyclerViewAdapter sectionedRecyclerViewAdapter = new SectionedRecyclerViewAdapter();
-        Calendar dateCreatedCal = Calendar.getInstance();
-        for (int eachMonth = 11; eachMonth >= 0; eachMonth--) {
 
-            // using a decrementing loop since list has been sorted based on date DESC
-            List<Medication> monthlyMed = new ArrayList<>();
-            for (Medication medication : medicationList) { // get the month each medication was created and check if it tallies with the current medication month (eachMonth)
-                dateCreatedCal.setTime(new Date(medication.getDateCreated()));
-                int dateCreatedMonth = dateCreatedCal.get(Calendar.MONTH);
+        if (medicationList.size() <= 0){
+            binding.pageContent.rvMedication.setVisibility(View.GONE);
+            binding.pageContent.tvEmptyText.setVisibility(View.VISIBLE);
+        } else {
+            binding.pageContent.rvMedication.setVisibility(View.VISIBLE);
+            binding.pageContent.tvEmptyText.setVisibility(View.GONE);
+            SectionedRecyclerViewAdapter sectionedRecyclerViewAdapter = new SectionedRecyclerViewAdapter();
+            Calendar dateCreatedCal = Calendar.getInstance();
+            for (int eachMonth = 11; eachMonth >= 0; eachMonth--) {
 
-                if (eachMonth == dateCreatedMonth) {
-                    monthlyMed.add(medication);
+                // using a decrementing loop since list has been sorted based on date DESC
+                List<Medication> monthlyMed = new ArrayList<>();
+                for (Medication medication : medicationList) { // get the month each medication was created and check if it tallies with the current medication month (eachMonth)
+                    dateCreatedCal.setTime(new Date(medication.getDateCreated()));
+                    int dateCreatedMonth = dateCreatedCal.get(Calendar.MONTH);
+
+                    if (eachMonth == dateCreatedMonth) {
+                        monthlyMed.add(medication);
+                    }
                 }
+
+                // create a title and section for each non-empty medicationList
+                if (monthlyMed.size() != 0) {
+                    String sectionTitle = Utility.returnMonthYearFromLong(monthlyMed.get(0).getDateCreated());
+                    sectionedRecyclerViewAdapter.addSection(new MedicationSectionedAdapter(this, monthlyMed, sectionTitle));
+                }
+
             }
 
-            // create a title and section for each non-empty medicationList
-            if (monthlyMed.size() != 0) {
-                String sectionTitle = Utility.returnMonthYearFromLong(monthlyMed.get(0).getDateCreated());
-                sectionedRecyclerViewAdapter.addSection(new MedicationSectionedAdapter(monthlyMed, sectionTitle));
-            }
-
+            binding.pageContent.rvMedication.setLayoutManager(layoutManager);
+            binding.pageContent.rvMedication.setAdapter(sectionedRecyclerViewAdapter);
         }
-
-        binding.pageContent.rvMedication.setLayoutManager(layoutManager);
-        binding.pageContent.rvMedication.setAdapter(sectionedRecyclerViewAdapter);
     }
 
     @Override

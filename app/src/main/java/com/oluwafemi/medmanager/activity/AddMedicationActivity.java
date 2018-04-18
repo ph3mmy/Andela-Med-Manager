@@ -55,6 +55,7 @@ import com.jaredrummler.materialspinner.MaterialSpinner;
 import com.oluwafemi.medmanager.R;
 import com.oluwafemi.medmanager.databinding.ActivityAddMedicationBinding;
 import com.oluwafemi.medmanager.fragment.DatePickerFragment;
+import com.oluwafemi.medmanager.job.MedicationReminderJob;
 import com.oluwafemi.medmanager.model.Medication;
 import com.oluwafemi.medmanager.model.User;
 import com.oluwafemi.medmanager.util.Utility;
@@ -369,8 +370,8 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
     private void addReminder(Medication medication) {
 
-        long medStartLong = medication.getStartDate().getTime();
-        long medEndLong = medication.getEndDate().getTime();
+        // set notification reminder
+        MedicationReminderJob.setMedicationReminder(medication, reminderRepeatMap);
 
         Calendar startEndCal = Calendar.getInstance();
         startEndCal.setTime(medication.getStartDate());
@@ -392,14 +393,12 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
         } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[1])) { // twice daily
             // get the number of hours to add to the HH param to create a new calendar
             int newHH = reminderSelectedHour + reminderRepeatMap.get(medication.getReminderRepeatFrequency());
-            Log.e(TAG, "addReminder: twice old hr = " + reminderSelectedHour + " new HH = " + newHH);
             startEndCal.set(year, month, day, newHH, reminderSelectedMins, 0);
             endCal.set(endYear, endMonth, endDay, newHH, reminderSelectedMins, 0);
 
         } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[2])) { // three times daily
             // get the number of hours to add to the HH param to create a new calendar
-            int newHH = reminderSelectedHour + reminderRepeatMap.get(medication.getReminderRepeatFrequency());
-            Log.e(TAG, "addReminder: THRICE old hr = " + reminderSelectedHour + " new HH = " + newHH);
+            int newHH = reminderSelectedHour + (2 * reminderRepeatMap.get(medication.getReminderRepeatFrequency()));
             startEndCal.set(year, month, day, newHH, reminderSelectedMins, 0);
             endCal.set(endYear, endMonth, endDay, newHH, reminderSelectedMins, 0);
         }
@@ -426,7 +425,6 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
             // calculate hours to set the first reminder
             int firstHour = reminderRepeatMap.get(medication.getReminderRepeatFrequency()) * 60;
-            Log.e(TAG, "addReminder: first hour == " + firstHour);
             setReminder(cr, dbId, firstHour);
         } else if (medication.getFrequency().equalsIgnoreCase(dailyFreq[2])) { // is twice, set reminder twice
 
@@ -435,7 +433,6 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
 
             // second reminder
             int secondDosage = reminderRepeatMap.get(medication.getReminderRepeatFrequency()) * 60;
-            Log.e(TAG, "addReminder: second hour == " + secondDosage);
             setReminder(cr, dbId, secondDosage);
 
             // 3rd reminder
@@ -474,13 +471,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
                 //view the event in calendar
                 startActivity(view);
             }
-            /*Cursor c = CalendarContract.Reminders.query(cr, eventID,
-                    new String[]{CalendarContract.Reminders.MINUTES});
-            if (c.moveToFirst()) {
-                System.out.println("calendar"
-                        + c.getInt(c.getColumnIndex(CalendarContract.Reminders.MINUTES)));
-            }
-            c.close();*/
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -518,9 +509,7 @@ public class AddMedicationActivity extends AppCompatActivity implements View.OnC
             } else {
                 ActivityCompat.requestPermissions(AddMedicationActivity.this, new String[]{permission}, requestCode);
             }
-        }/* else {
-            Toast.makeText(this, "" + permission + " is already granted.", Toast.LENGTH_SHORT).show();
-        }*/
+        }
     }
 
 }

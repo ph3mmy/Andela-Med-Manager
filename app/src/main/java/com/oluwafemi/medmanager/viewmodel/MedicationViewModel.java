@@ -45,10 +45,9 @@ public class MedicationViewModel extends AndroidViewModel {
         return medicationDatabase.medicationDao().searchMedicationWithName("%"+nameQuery+"%", activeYear);
     }
 
-    // get search medication by name for the current year
-   /* public LiveData<List<Medication>> searchYearlyMedicationWithName(String nameQuery, String activeYear) {
-        return medicationDatabase.medicationDao().searchMedicationWithName(nameQuery, activeYear);
-    }*/
+    public void deleteMedication (Medication medication) {
+        new DeleteMedicationAsyncTask(medicationDatabase, medication).execute();
+    }
 
     public void insertMedication(Medication medication) {
         new InsertMedicationAsyncTask(medicationDatabase, medication).execute();
@@ -67,6 +66,23 @@ public class MedicationViewModel extends AndroidViewModel {
         @Override
         protected Void doInBackground(Void... voids) {
             medicationDatabase.medicationDao().insertMedication(medication);
+            return null;
+        }
+    }
+
+    static class DeleteMedicationAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        MedicationDatabase medicationDatabase;
+        Medication medication;
+
+        public DeleteMedicationAsyncTask(MedicationDatabase medicationDatabase, Medication medication) {
+            this.medicationDatabase = medicationDatabase;
+            this.medication = medication;
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            medicationDatabase.medicationDao().deleteMedication(medication);
             return null;
         }
     }

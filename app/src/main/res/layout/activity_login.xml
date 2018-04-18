@@ -11,23 +11,28 @@
         tools:context="com.oluwafemi.medmanager.activity.MainActivity">
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="@dimen/margin_50"
-            android:src="@mipmap/ic_launcher"/>
+            android:contentDescription="@string/login_page_logo"
+            app:srcCompat="@drawable/login_icon"/>
 
-        <FrameLayout
+        <TextView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
+            android:layout_height="wrap_content"
+            android:text="@string/login_with_your_google_account"
+            android:gravity="center"
+            android:textColor="@color/white"
+            android:layout_marginTop="@dimen/margin_50"
+            android:textSize="@dimen/text_size_20"/>
+
             <com.google.android.gms.common.SignInButton
                 android:id="@+id/sign_in_button"
                 android:layout_width="match_parent"
+                android:layout_marginTop="@dimen/margin_20"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center_vertical" />
-
-        </FrameLayout>
-
 
         <Button
             android:id="@+id/sign_out_button"
